@@ -22,6 +22,6 @@ class DateField extends Field {
 
 class Id extends IntegerField {
     public function __construct($max_length=20) {
-        parent::__construct($max_length, ['primary key', 'autoincrement']);
+        parent::__construct($max_length, ['primary key', 'auto_increment']);
     }
 }

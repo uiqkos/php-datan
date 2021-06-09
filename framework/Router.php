@@ -12,17 +12,4 @@ class Router {
         return self::$root_path;
     }
 
-    public static function getListPath(): string {
-        return self::$root_path.'/list';
-    }
-    public static function getListPath(): string {
-        return self::$root_path.'/list';
-    }
-    public static function getListPath(): string {
-        return self::$root_path.'/list';
-    }
-    public static function getListPath(): string {
-        return self::$root_path.'/list';
-    }
-
 }

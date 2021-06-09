@@ -8,14 +8,14 @@ class MyModel implements Model {
     public int $age;
     public DateTime $birth_date;
 
-    private static array $fields = array();
-    private static array $field_names = ['name', 'age', 'birth_date'];
+    private static $fields;
 
     static function init() {
-        self::$fields['id']         = new Id();
-        self::$fields['name']       = new StringField();
-        self::$fields['age']        = new IntegerField();
-        self::$fields['birth_date'] = new DateField();
+        self::$fields = (new Fields())
+            ->add('id', new Id())
+            ->add('name', new StringField())
+            ->add('age', new IntegerField())
+            ->add('birth_date', new DateField());
     }
 
     public function __construct(string $name, int $age, DateTime $birth_date) {
@@ -23,12 +23,10 @@ class MyModel implements Model {
         $this->age = $age;
         $this->birth_date = $birth_date;
     }
-    public static function getFields(): array {
+    public static function getFields(): Fields {
         return self::$fields;
     }
-    public static function getFieldNames(): array {
-        return self::$field_names;
-    }
+
     public static function getTableName(): string {
         return 'my_table';
     }
@@ -41,8 +39,12 @@ class MyModel implements Model {
         return 'id';
     }
 
-    public static function getValues(): array {
-        return array_values(self::$fields);
+    public function getValues(): array {
+        return [
+            "'$this->name'",
+            $this->age,
+            "'".$this->birth_date->format("Y-m-d")."'"
+        ];
     }
 }
 
@@ -57,23 +59,26 @@ class MyModelController implements Controller {
         $this->myModelRepository = $myModelRepository;
     }
 
-    public function all(): string {
-        return ListView(MyModel::getFieldNames(), $this->myModelRepository->findAll());
+    public function all(): View {
+        return new View(ListView, [
+            MyModel::getFieldNames(),
+            $this->myModelRepository->findAll()
+        ]);
     }
 
-    public function details(int $id): string {
-        // TODO: Implement details() method.
+    public function details(int $id): View {
+
     }
 
-    public function create(Model $object): string {
+    public function create(Model $object): View {
         // TODO: Implement create() method.
     }
 
-    public function update(Model $object): string {
+    public function update(Model $object): View {
         // TODO: Implement update() method.
     }
 
-    public function delete(int $id): string {
+    public function delete(int $id): View {
         // TODO: Implement delete() method.
     }
 }

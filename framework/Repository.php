@@ -12,10 +12,10 @@ class Repository {
      * @param DBConfig $config
      * @param $model
      */
-    public function __construct(DBConfig $config, $model, $table_name) {
+    public function __construct(DBConfig $config, $model) {
         $this->config = $config;
         $this->model = $model;
-        $this->table_name = $table_name;
+        $this->table_name = $model::getTableName();
         $this->connection = new mysqli(
             $config->hostname,
             $config->username,
@@ -55,11 +55,14 @@ class Repository {
         return $objects;
     }
 
-    public function save(Model $object): void {
-        $values = join(', ', array_values($object::getFields()));
+    public function save(Model $object): bool {
+        $values = join(', ', $object->getValues());
+        $query = "insert into $this->table_name values (null, $values);";
         $r = $this->connection->query(
-            "insert into $this->table_name values ($values)"
+            $query
         );
+        print "hello, $query";
+        return $r;
     }
 
     /**
