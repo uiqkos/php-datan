@@ -3,17 +3,15 @@
 
 class Field
 {
-    var $type;
-//    var $name;
-    var $mysql_name;
+    public string $type;
+    public string $mysql_type;
 
-    /**
-     * Field constructor.
-     * @param $type string
-     */
-    function __construct($type, $mysql_name) {
-//        $this->name = $name;
-        $this->mysql_name = $mysql_name;
+    function __construct(string $type, string $mysql_name) {
+        $this->mysql_type = $mysql_name;
         $this->type = $type;
+    }
+
+    public function __toString() {
+        return "[$this->type]";
     }
 }

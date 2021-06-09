@@ -1,31 +1,35 @@
 <?php
 
 include "framework/model/Types.php";
+include "framework/model/Model.php";
 
 class MyModel extends Model {
-    public static $Name;
-    public static $Age;
-    public static $BirthDate;
+    public string $name;
+    public int $age;
+    public DateTime $birth_date;
 
-    public $name;
-    public $age;
-    public $birth_date;
+    private static array $fields = array();
+    private static array $field_names = ['name', 'age', 'birth_date'];
 
     static function init() {
-        self::$Name = new StringField();
-        self::$Age = new IntegerField();
-        self::$BirthDate = new DateField();
+        self::$fields['name']       = new StringField();
+        self::$fields['age']        = new IntegerField();
+        self::$fields['birth_date'] = new DateField();
     }
 
-    /**
-     * MyModel constructor.
-     * @param $name string
-     * @param $age int
-     * @param $birth_date DateTime
-     */
-    public function __construct($name, $age, $birth_date) {
+    public function __construct(string $name, int $age, DateTime $birth_date) {
         $this->name = $name;
         $this->age = $age;
         $this->birth_date = $birth_date;
+    }
+    public static function getFields(): array {
+        return self::$fields;
+    }
+    public static function getFieldNames(): array {
+        return self::$field_names;
+    }
+
+    public static function getTableName(): string {
+        return 'my_table';
     }
 }
