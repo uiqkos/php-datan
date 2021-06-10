@@ -20,4 +20,8 @@ $controller = new MyModelController(
     $repo
 );
 
-print $repo->save(new MyModel('Faker', 15, new DateTime('now')));
+print $repo->create(new MyModel('Misha', 13, new DateTime('now')));
+//print $repo->findById(2);
+print join(' ', $repo->findAll());
+print $repo->delete(1);
+print join(' ', $repo->findAll());

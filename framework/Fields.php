@@ -6,7 +6,7 @@ class Fields {
 
     public function add(string $name, Field $field) {
         $this->fields[$name] = $field;
-        return $this
+        return $this;
     }
 
     public function getFieldNames() {
@@ -18,12 +18,21 @@ class Fields {
             array_filter(
                 $this->fields,
                 function (Field $field) {
-                    return in_array(
+                    return !in_array(
                         'auto_increment',
                         $field->getConstrains()
                     );
                 }
             )
+        );
+    }
+
+    public function getMySqlTypes() {
+        return array_map(
+            function ($field) {
+                return $field->getMySqlType();
+            },
+            $this->fields
         );
     }
 

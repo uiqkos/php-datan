@@ -3,59 +3,34 @@
 
 class Field
 {
-    public string $type;
     public string $mysql_type;
     public array $constrains;
 
-    /**
-     * @return string
-     */
-    public function getType(): string {
-        return $this->type;
-    }
-
-    /**
-     * @param string $type
-     */
-    public function setType(string $type): void {
-        $this->type = $type;
-    }
-
-    /**
-     * @return string
-     */
     public function getMysqlType(): string {
         return $this->mysql_type;
     }
 
-    /**
-     * @param string $mysql_type
-     */
-    public function setMysqlType(string $mysql_type): void {
+    public function setMysqlType(string $mysql_type): Field {
         $this->mysql_type = $mysql_type;
+        return $this;
     }
 
-    /**
-     * @return array
-     */
     public function getConstrains(): array {
         return $this->constrains;
     }
 
-    /**
-     * @param array $constrains
-     */
-    public function setConstrains(array $constrains): void {
+    public function setConstrains(array $constrains): Field {
         $this->constrains = $constrains;
+        return $this;
     }
 
-    function __construct(string $type, string $mysql_name, array $constrains = array()) {
+    function __construct(string $mysql_name, array $constrains = array()) {
         $this->mysql_type = $mysql_name;
-        $this->type = $type;
         $this->constrains = $constrains;
     }
 
     public function __toString() {
-        return "[$this->type]";
+        $constrains = join(' ', $this->constrains);
+        return "$this->mysql_type $constrains";
     }
 }

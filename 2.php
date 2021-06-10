@@ -2,29 +2,18 @@
 
 include "framework/model/Types.php";
 include "framework/model/Model.php";
+include "framework/Fields.php";
 
 class MyModel implements Model {
+    public int $id;
     public string $name;
     public int $age;
     public DateTime $birth_date;
-
-    private static $fields;
-
-    static function init() {
-        self::$fields = (new Fields())
-            ->add('id', new Id())
-            ->add('name', new StringField())
-            ->add('age', new IntegerField())
-            ->add('birth_date', new DateField());
-    }
 
     public function __construct(string $name, int $age, DateTime $birth_date) {
         $this->name = $name;
         $this->age = $age;
         $this->birth_date = $birth_date;
-    }
-    public static function getFields(): Fields {
-        return self::$fields;
     }
 
     public static function getTableName(): string {
@@ -32,19 +21,13 @@ class MyModel implements Model {
     }
 
     public static function fromFields(array $fields): Model {
-        return new MyModel(...$fields);
-    }
-
-    public static function getIdName(): string {
-        return 'id';
-    }
-
-    public function getValues(): array {
-        return [
-            "'$this->name'",
-            $this->age,
-            "'".$this->birth_date->format("Y-m-d")."'"
-        ];
+        return new MyModel(
+            $fields['name'],
+            $fields['age'],
+            DateTime::createFromFormat(
+                'Y-m-d', $fields['birth_date']
+            )
+        );
     }
 }
 

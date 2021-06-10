@@ -3,25 +3,25 @@
 include 'Field.php';
 
 class IntegerField extends Field {
-    public function __construct($max_length=20, $constrains = array()) {
-        parent::__construct('int', sprintf('int(%d)', $max_length), $constrains);
+    public function __construct($constrains = array()) {
+        parent::__construct('int', $constrains);
     }
 }
 
 class StringField extends Field {
     public function __construct($max_length=20, $constrains = array()) {
-        parent::__construct('string', sprintf('varchar(%d)', $max_length), $constrains);
+        parent::__construct(sprintf('varchar(%d)', $max_length), $constrains);
     }
 }
 
 class DateField extends Field {
     public function __construct($constrains = array()) {
-        parent::__construct('date', 'date', $constrains);
+        parent::__construct('date', $constrains);
     }
 }
 
 class Id extends IntegerField {
-    public function __construct($max_length=20) {
-        parent::__construct($max_length, ['primary key', 'auto_increment']);
+    public function __construct() {
+        parent::__construct(['primary key', 'auto_increment']);
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+include "Status.php";
 
 class Repository {
     private DBConfig $config;
@@ -16,18 +17,34 @@ class Repository {
         $this->config = $config;
         $this->model = $model;
         $this->table_name = $model::getTableName();
+
         $this->connection = new mysqli(
             $config->hostname,
             $config->username,
             $config->password,
             $config->database
         );
+
+        $fields = array_map(
+            function ($name, $value) {
+                return "$name $value";
+            },
+            $model::getFields()->getFieldNames(),
+            $model::getFields()->getFieldValues()
+        );
+
+        $fields = join(', ', $fields);
+
+        $this->connection->query(
+            "create table if not exists $this->table_name ($fields)"
+        );
     }
 
     public function delete(int $id): int {
+        $idname = $this->model::getIdName();
         $r = $this->connection->query(
-            "delete * from $this->table_name".
-                "where $this->model->getIdName()=$id"
+            "delete from $this->table_name ".
+                "where $idname=$id"
         );
         if ($r)
             return Status::Successful;
@@ -35,8 +52,9 @@ class Repository {
     }
 
     public function findById(int $id): Model {
+        $idname = $this->model::getIdName();
         $result = $this->connection->query(
-            "select * from $this->table_name where $this->model->getIdName()=$id"
+            "select * from $this->table_name where $idname=$id"
         );
         if ($r = $result->fetch_assoc()){
             return $this->model::fromFields($r);
@@ -55,14 +73,27 @@ class Repository {
         return $objects;
     }
 
-    public function save(Model $object): bool {
+    public function create(Model $object): bool {
         $values = join(', ', $object->getValues());
-        $query = "insert into $this->table_name values (null, $values);";
-        $r = $this->connection->query(
-            $query
+        $fields = join(', ', $object::getFields()->getFieldNamesWithoutAutoInc());
+        return $this->connection->query(
+            "insert into $this->table_name ($fields) values ($values)"
         );
-        print "hello, $query";
-        return $r;
+    }
+
+    public function update(Model $object) {
+        $setters = join(', ', array_map(
+            function ($name, $value) {
+                return "$name=$value";
+            },
+            $object::getFields()->getFieldNames(),
+            $object->getValues()
+        ));
+        $idname = $this->model::getIdName();
+        $this->connection->query(
+            "update $this->table_name set $setters where $idname=$object"
+        );
+        $this->connection->insert_id;
     }
 
     /**
