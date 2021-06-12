@@ -4,8 +4,8 @@ include "framework/model/Types.php";
 include "framework/model/Model.php";
 include "framework/Fields.php";
 
-class MyModel implements Model {
-    public int $id;
+class MyModel extends Model {
+    public ?int $id = null;
     public string $name;
     public int $age;
     public DateTime $birth_date;
@@ -14,20 +14,6 @@ class MyModel implements Model {
         $this->name = $name;
         $this->age = $age;
         $this->birth_date = $birth_date;
-    }
-
-    public static function getTableName(): string {
-        return 'my_table';
-    }
-
-    public static function fromFields(array $fields): Model {
-        return new MyModel(
-            $fields['name'],
-            $fields['age'],
-            DateTime::createFromFormat(
-                'Y-m-d', $fields['birth_date']
-            )
-        );
     }
 }
 

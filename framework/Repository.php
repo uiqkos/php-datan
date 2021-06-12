@@ -1,10 +1,11 @@
 <?php
 
-include "Status.php";
+require "Status.php";
+require 'model/ModelDecorator.php';
 
 class Repository {
     private DBConfig $config;
-    private $model;
+    private ModelDecorator $modelDecorator;
     private string $table_name;
     private mysqli $connection;
 
@@ -12,11 +13,14 @@ class Repository {
      * Repository constructor.
      * @param DBConfig $config
      * @param $model
+     * @throws ReflectionException
      */
-    public function __construct(DBConfig $config, $model) {
+    public function __construct(DBConfig $config, $model, $table_name = null) {
         $this->config = $config;
-        $this->model = $model;
-        $this->table_name = $model::getTableName();
+        if (is_null($table_name))
+            $this->table_name = $model;
+        else
+            $this->table_name = $table_name;
 
         $this->connection = new mysqli(
             $config->hostname,
@@ -25,12 +29,14 @@ class Repository {
             $config->database
         );
 
+        $this->modelDecorator = new ModelDecorator($model);
+
         $fields = array_map(
             function ($name, $value) {
                 return "$name $value";
             },
-            $model::getFields()->getFieldNames(),
-            $model::getFields()->getFieldValues()
+            $this->modelDecorator->getFieldNames(),
+            $this->modelDecorator->getFieldsAsString()
         );
 
         $fields = join(', ', $fields);
@@ -41,10 +47,9 @@ class Repository {
     }
 
     public function delete(int $id): int {
-        $idname = $this->model::getIdName();
         $r = $this->connection->query(
             "delete from $this->table_name ".
-                "where $idname=$id"
+                "where id=$id"
         );
         if ($r)
             return Status::Successful;
@@ -52,12 +57,11 @@ class Repository {
     }
 
     public function findById(int $id): Model {
-        $idname = $this->model::getIdName();
         $result = $this->connection->query(
-            "select * from $this->table_name where $idname=$id"
+            "select * from $this->table_name where id=$id"
         );
         if ($r = $result->fetch_assoc()){
-            return $this->model::fromFields($r);
+            return $this->modelDecorator->fromArray($r);
         }
         throw new Exception('Cannot find object with id = $id');
     }
@@ -68,17 +72,22 @@ class Repository {
         );
         $objects = array();
         while ($r = $result->fetch_assoc()) {
-            array_push($objects, $this->model::fromFields($r));
+            array_push(
+                $objects,
+                $this->modelDecorator->fromArray($r)
+            );
         }
         return $objects;
     }
 
-    public function create(Model $object): bool {
-        $values = join(', ', $object->getValues());
-        $fields = join(', ', $object::getFields()->getFieldNamesWithoutAutoInc());
-        return $this->connection->query(
+    public function create(Model $object): Model {
+        $fields = join(', ', $this->modelDecorator->getFieldNames());
+        $values = join(', ', $this->modelDecorator->parseValuesToMySql($object));
+        print "insert into $this->table_name ($fields) values ($values)";
+        $this->connection->query(
             "insert into $this->table_name ($fields) values ($values)"
         );
+        return $object->setId($this->connection->insert_id);
     }
 
     public function update(Model $object) {
@@ -86,14 +95,13 @@ class Repository {
             function ($name, $value) {
                 return "$name=$value";
             },
-            $object::getFields()->getFieldNames(),
-            $object->getValues()
+            $this->modelDecorator->getFieldNames(),
+            $this->modelDecorator->parseValuesToMySql($object)
         ));
-        $idname = $this->model::getIdName();
+        $id = $object->getId();
         $this->connection->query(
-            "update $this->table_name set $setters where $idname=$object"
+            "update $this->table_name set $setters where id = $id"
         );
-        $this->connection->insert_id;
     }
 
     /**
@@ -113,22 +121,6 @@ class Repository {
     }
 
     /**
-     * @return mixed
-     */
-    public function getModel() {
-        return $this->model;
-    }
-
-    /**
-     * @param mixed $model
-     * @return Repository
-     */
-    public function setModel($model) {
-        $this->model = $model;
-        return $this;
-    }
-
-    /**
      * @return string
      */
     public function getTableName(): string {
@@ -142,6 +134,13 @@ class Repository {
     public function setTableName(string $table_name): Repository {
         $this->table_name = $table_name;
         return $this;
+    }
+
+    /**
+     * @return ModelDecorator
+     */
+    public function getModelDecorator(): ModelDecorator {
+        return $this->modelDecorator;
     }
 
 }

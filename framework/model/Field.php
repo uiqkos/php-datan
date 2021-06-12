@@ -1,10 +1,17 @@
 <?php
 
 
-class Field
+abstract class Field
 {
     public string $mysql_type;
     public array $constrains;
+
+    public abstract function toString($value): string;
+    public abstract function parse(string $value);
+
+    public function toMySql($value): string {
+        return $this->toString($value);
+    }
 
     public function getMysqlType(): string {
         return $this->mysql_type;
