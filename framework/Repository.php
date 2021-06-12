@@ -17,6 +17,7 @@ class Repository {
      */
     public function __construct(DBConfig $config, $model, $table_name = null) {
         $this->config = $config;
+
         if (is_null($table_name))
             $this->table_name = $model;
         else
@@ -63,7 +64,7 @@ class Repository {
         if ($r = $result->fetch_assoc()){
             return $this->modelDecorator->fromArray($r);
         }
-        throw new Exception('Cannot find object with id = $id');
+        throw new Exception("Cannot find object with id = $id");
     }
 
     public function findAll(): array {
@@ -141,6 +142,10 @@ class Repository {
      */
     public function getModelDecorator(): ModelDecorator {
         return $this->modelDecorator;
+    }
+
+    public function getFieldNames(): array {
+        return $this->modelDecorator->getFieldNames();
     }
 
 }

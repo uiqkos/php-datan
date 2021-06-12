@@ -1,6 +1,6 @@
 <?php
 
-include "framework/MainController.php";
+//include "framework/MainController.php";
 
 //MainController::register(Testable::class);
 //print Testable::fromArray([
@@ -15,9 +15,21 @@ include "framework/MainController.php";
 //    print strval($property->getType());
 //}
 require '4.php';
-$a = new A(1, '2');
-$a->toString = function () use ($a) {
-    return "$a->a";
+
+$a = new A(2);
+
+$method = function () {
+    return "sdfdfsdf";
 };
 
-print $a->toString();
+function bind($obj, $method) {
+    $obj->toString = $method;
+    return $obj;
+}
+bind($a, $method);
+
+$method = function () {
+    return "keka";
+};
+bind($a, $method);
+print $a;

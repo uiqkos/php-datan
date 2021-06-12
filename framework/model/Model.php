@@ -1,13 +1,11 @@
 <?php
 
-abstract class Model {
-    public function toString(): string {
-        throw new Exception('Not implemented');
-    }
-
-    public function __toString(): string {
-        return $this->toString();
-    }
+/**
+ * Class Model
+ * @method toString()
+ */
+abstract class Model extends stdClass {
+    public ?int $id = null;
 
     public function __call($method, $args) {
         if (isset($this->$method)) {
@@ -25,4 +23,7 @@ abstract class Model {
         return $this;
     }
 
+    public function __toString(): string {
+        return $this->toString();
+    }
 }

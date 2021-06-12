@@ -11,7 +11,6 @@ class View {
     }
 
     public function call() {
-        $func = $this->func;
-        $func(...$this->params);
+        return call_user_func_array($this->func, $this->params);
     }
 }

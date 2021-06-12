@@ -15,7 +15,6 @@ class ModelDecorator {
         $this->r = new ReflectionClass($model);
 
         $this->fields = array();
-
         foreach ($this->r->getProperties() as $property) {
             $this->fields[$property->getName()] =
                 match ($strtype = strval($property->getType())) {
@@ -36,17 +35,6 @@ class ModelDecorator {
         return array_map('strval', $this->fields);
     }
 
-    public function getFieldNamesWithout($constrain): array {
-        return array_keys(array_filter(
-            $this->fields,
-            function (Field $field) use ($constrain) {
-                return !in_array(
-                    $constrain,
-                    $field->getConstrains()
-                );
-            }
-        ));
-    }
 
     public function parseValues(Model $object): array {
         return array_map(
@@ -88,10 +76,19 @@ class ModelDecorator {
                 }
             )
         )))->setId($fields['id']);
+
         $o->toString = function () use ($o) {
             return $this->asString($o);
         };
         return $o;
+    }
+
+    public function toArray(Model $object): array {
+        $arr = array();
+        foreach ($this->getFieldNames() as $field_name) {
+            $arr[$field_name] = $object->$field_name;
+        }
+        return $arr;
     }
 
     public function asString(Model $object): string {

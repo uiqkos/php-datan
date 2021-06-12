@@ -18,27 +18,29 @@ $controller = new MyModelController(
     $repo
 );
 
-function printModel($object) {
-    global $repo;
-    print $repo->getModelDecorator()
-        ->asString($object);
-}
+$controller->delete(2)();
 
-printModel(
-    $repo->create(
-        new MyModel(
-            'Misha',
-            13,
-            new DateTime('now')
-        )
-    )
-);
-print join(' ', array_map(function ($m) {printModel($m);}, $repo->findAll()));
-print $repo->delete(1);
+//function printModel($object) {
+//    global $repo;
+//    print $repo->getModelDecorator()
+//        ->asString($object);
+//}
+
+//printModel(
+//    $repo->create(
+//        new MyModel(
+//            'Misha',
+//            13,
+//            new DateTime('now')
+//        )
+//    )
+//);
+//print join(' ', array_map(function ($m) {printModel($m);}, $repo->findAll()));
+//print $repo->delete(1);
 //print join(' ', array_map(function ($m) {printModel($m);}, $repo->findAll()));
 //print join(' ', $repo->findAll());
-
-$mishka = $repo->findById(2);
+//
+//$mishka = $repo->findById(2);
 //printModel($mishka);
 //$repo->update((new MyModel('NeMishake', 15, $mishka->birth_date))->setId(2));
 

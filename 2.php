@@ -2,10 +2,8 @@
 
 include "framework/model/Types.php";
 include "framework/model/Model.php";
-include "framework/Fields.php";
 
 class MyModel extends Model {
-    public ?int $id = null;
     public string $name;
     public int $age;
     public DateTime $birth_date;
@@ -17,7 +15,7 @@ class MyModel extends Model {
     }
 }
 
-class MyModelController implements Controller {
+class MyModelController extends Controller {
     private Repository $myModelRepository;
 
     /**
@@ -28,26 +26,7 @@ class MyModelController implements Controller {
         $this->myModelRepository = $myModelRepository;
     }
 
-    public function all(): View {
-        return new View(ListView, [
-            MyModel::getFieldNames(),
-            $this->myModelRepository->findAll()
-        ]);
-    }
-
-    public function details(int $id): View {
-
-    }
-
-    public function create(Model $object): View {
-        // TODO: Implement create() method.
-    }
-
-    public function update(Model $object): View {
-        // TODO: Implement update() method.
-    }
-
-    public function delete(int $id): View {
-        // TODO: Implement delete() method.
+    public function getRepository(): Repository {
+        return $this->myModelRepository;
     }
 }

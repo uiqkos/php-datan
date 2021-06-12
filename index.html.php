@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+before
 <?php function get_index($fields) { ?>
 <html lang="en">
 <head>

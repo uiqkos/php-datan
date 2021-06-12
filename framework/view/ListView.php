@@ -7,7 +7,7 @@
         <?php
         foreach ($objects as $object) {
             echo "<tr>";
-            foreach ($object->getValues() as $value)
+            foreach ($object as $value)
                 echo "<td>$value</td>";
             echo "</tr>";
         }

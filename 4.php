@@ -1,35 +1,25 @@
 <?php
 
-class A {
-    public string $a;
-    public int $b;
+/**
+ * Class A
+ * @method toString
+ */
 
-    /**
-     * A constructor.
-     * @param string $a
-     * @param int $b
-     */
-    public function __construct(string $a, int $b) {
+class A {
+    public $a;
+    public function __construct($a) {
         $this->a = $a;
-        $this->b = $b;
     }
 
-    public function __call($method, $args)
-    {
+    public function __call($method, $args) {
         if (isset($this->$method)) {
             $func = $this->$method;
             return call_user_func_array($func, $args);
         }
+        return null;
     }
 
-    public function __set(string $name, $value): void {
-
+    public function __toString(): string {
+        return $this->toString();
     }
-
-    public function toString(): string {
-        throw new Exception('Not implemented');
-    }
-
 }
-
-//(new ReflectionClass(A))->newInstance()
