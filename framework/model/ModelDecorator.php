@@ -22,7 +22,7 @@ class ModelDecorator {
                     'int' => new IntegerField(),
                     'string' => new StringField(200),
                     'DateTime' => new DateField(),
-                    default => throw new \Exception("Cannot convert field: $strtype")
+                    default => throw new Exception("Cannot convert field: $strtype")
                 };
         }
     }

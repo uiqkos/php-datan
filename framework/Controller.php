@@ -2,7 +2,7 @@
 
 include "view/DeleteView.php";
 include "view/CreateView.php";
-include "view/DetailView.php";
+include "view/DetailsView.php";
 include "view/UpdateView.php";
 include "view/ListView.php";
 
@@ -19,7 +19,7 @@ abstract class Controller {
 
     public function details(int $id): callable {
         return function () use ($id) {
-            DetailView(
+            DetailsView(
                 $this
                     ->getRepository()
                     ->getFieldNames(),
@@ -27,7 +27,9 @@ abstract class Controller {
                     ->getRepository()
                     ->getModelDecorator()
                     ->toArray(
-                        $this->getRepository()->findById($id)
+                        $this
+                            ->getRepository()
+                            ->findById($id)
                 )
             );
         };
