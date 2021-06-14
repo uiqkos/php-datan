@@ -1,25 +1,14 @@
 <?php
 
-/**
- * Class A
- * @method toString
- */
 
-class A {
-    public $a;
-    public function __construct($a) {
-        $this->a = $a;
-    }
+new Router(
+    new Controller(
+        new Repository(
 
-    public function __call($method, $args) {
-        if (isset($this->$method)) {
-            $func = $this->$method;
-            return call_user_func_array($func, $args);
-        }
-        return null;
-    }
+        )
+    )
+);
 
-    public function __toString(): string {
-        return $this->toString();
-    }
-}
+new class extends Repository {
+
+};

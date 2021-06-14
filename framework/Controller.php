@@ -6,82 +6,83 @@ include "view/DetailsView.php";
 include "view/UpdateView.php";
 include "view/ListView.php";
 
-abstract class Controller {
-    
-    public function all(): callable {
-        return function () {
-            ListView(
-                $this->getRepository()->getFieldNames(),
-                $this->getRepository()->findAll()
-            );
-        };
+class Controller {
+    private Repository $repository;
+
+    /**
+     * Controller constructor.
+     * @param Repository $repository
+     */
+    public function __construct(Repository $repository) {
+        $this->repository = $repository;
     }
 
-    public function details(int $id): callable {
-        return function () use ($id) {
-            DetailsView(
-                $this
-                    ->getRepository()
-                    ->getFieldNames(),
-                $this
-                    ->getRepository()
-                    ->getModelDecorator()
-                    ->toArray(
-                        $this
-                            ->getRepository()
-                            ->findById($id)
-                )
-            );
-        };
+    public function all() {
+        ListView(
+            $this->getRepository()->getFieldNames(),
+            $this->getRepository()->findAll()
+        );
     }
 
-    public function create(): callable {
-        return function () {
+    public function details(int $id) {
+        DetailsView(
             $this
                 ->getRepository()
-                ->create(
-                $this
-                    ->getRepository()
-                    ->getModelDecorator()
-                    ->fromArray(
-                        CreateView(
-                            $this
-                                ->getRepository()
-                                ->getFieldNames()
-                        )
-                )
-            );
-        };
+                ->getFieldNames(),
+            $this
+                ->getRepository()
+                ->getModelDecorator()
+                ->toArray(
+                    $this
+                        ->getRepository()
+                        ->findById($id)
+            )
+        );
     }
 
-    public function update(): callable {
-        return function () {
-            $this->getRepository()->create(
-                $this
-                    ->getRepository()
-                    ->getModelDecorator()
-                    ->fromArray(
-                    UpdateView(
+    public function create() {
+        $this
+            ->getRepository()
+            ->create(
+            $this
+                ->getRepository()
+                ->getModelDecorator()
+                ->fromArray(
+                    CreateView(
                         $this
                             ->getRepository()
                             ->getFieldNames()
                     )
-                )
-            );
-        };
+            )
+        );
     }
 
-    public function delete(int $id): callable {
-        return function () use ($id) {
-            DeleteView(
-                strval(
+    public function update() {
+        $this->getRepository()->create(
+            $this
+                ->getRepository()
+                ->getModelDecorator()
+                ->fromArray(
+                UpdateView(
                     $this
                         ->getRepository()
-                        ->findById($id)
+                        ->getFieldNames()
                 )
-            );
-        };
+            )
+        );
     }
 
-    public abstract function getRepository(): Repository;
+    public function delete(int $id) {
+        DeleteView(
+            strval(
+                $this
+                    ->getRepository()
+                    ->findById($id)
+            )
+        );
+    }
+
+    public function getRepository(): Repository {
+        return $this->repository;
+    }
 }

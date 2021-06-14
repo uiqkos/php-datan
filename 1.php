@@ -1,24 +1,24 @@
 <?php
-
-include 'framework/Repository.php';
-include 'framework/DBConfig.php';
-include 'framework/Controller.php';
-include '2.php';
-
-$repo = new Repository(
-    (new DBConfig())
-        ->setHostname('localhost')
-        ->setUsername('root')
-        ->setPassword('1234')
-        ->setDatabase('mydb'),
-    MyModel::class
-);
-
-$controller = new MyModelController(
-    $repo
-);
-
-$controller->delete(2)();
+//
+//include 'framework/Repository.php';
+//include 'framework/DBConfig.php';
+//include 'framework/Controller.php';
+//include '2.php';
+//
+//$repo = new Repository(
+//    (new DBConfig())
+//        ->setHostname('localhost')
+//        ->setUsername('root')
+//        ->setPassword('1234')
+//        ->setDatabase('mydb'),
+//    MyModel::class
+//);
+//
+//$controller = new MyModelController(
+//    $repo
+//);
+//
+//$controller->delete(2)();
 
 //function printModel($object) {
 //    global $repo;
@@ -43,4 +43,15 @@ $controller->delete(2)();
 //$mishka = $repo->findById(2);
 //printModel($mishka);
 //$repo->update((new MyModel('NeMishake', 15, $mishka->birth_date))->setId(2));
+
+
+/**
+ * @Route('/f')
+ */
+function f () {
+
+}
+
+$r = new ReflectionFunction('f');
+print $r->getDocComment();
 

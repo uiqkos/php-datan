@@ -36,7 +36,7 @@ class ModelDecorator {
     }
 
 
-    public function parseValues(Model $object): array {
+    public function toStringArray(Model $object): array {
         return array_map(
             function (Field $field, $field_name) use ($object) {
                 if ($field instanceof Id)
@@ -80,6 +80,11 @@ class ModelDecorator {
         $o->toString = function () use ($o) {
             return $this->asString($o);
         };
+
+        $o->getValues = function () use ($o) {
+            return $this->toStringArray($o);
+        };
+
         return $o;
     }
 
@@ -92,6 +97,6 @@ class ModelDecorator {
     }
 
     public function asString(Model $object): string {
-        return join(', ', $this->parseValues($object));
+        return join(', ', $this->toStringArray($object));
     }
 }

@@ -2,61 +2,55 @@
 
 
 class Router {
-    private static Route $root;
+    private static ?Router $instance = null;
 
-    private static Route $GET;
-    private static Route $POST;
-    private static Route $PATCH;
-    private static Route $DELETE;
+    private Route $GET;
+    private Route $POST;
+    private Route $PATCH;
+    private Route $DELETE;
 
     private function __construct() {
-        self::$DELETE = new Route();
-        self::$POST = new Route();
-        self::$GET = new Route();
-        self::$PATCH = new Route();
+        $this->DELETE = new Route();
+        $this->POST = new Route();
+        $this->GET = new Route();
+        $this->PATCH = new Route();
     }
 
-    public static function route(string $path, $method) {
-
-        return self::$root->route($segments);
+    public static function getInstance(): Router {
+        if (is_null(self::$instance))
+            self::$instance = new Router();
+        return self::$instance;
     }
 
-    public static function bind(string $path, callable $func, string $method) {
-        $segments = str_split('/', $path);
-        // self::$method
+    public function bind(string $path, callable | array $func, string $method) {
+        $segments = explode('/', $path);
         match ($method) {
-            'GET' => self::$GET->bind($segments, $func),
-            'POST' => self::$POST->bind($segments, $func),
-            'DELETE' => self::$DELETE->bind($segments, $func),
-            'PATCH' => self::$PATCH->bind($segments, $func),
+            'GET'    | 'get'    => $this->GET   ->bind(array_splice($segments, 1), $func),
+            'POST'   | 'post'   => $this->POST  ->bind(array_splice($segments, 1), $func),
+            'DELETE' | 'delete' => $this->DELETE->bind(array_splice($segments, 1), $func),
+            'PATCH'  | 'patch'  => $this->PATCH ->bind(array_splice($segments, 1), $func),
         };
     }
 
-    public function get(string $path, callable $function) {
-        self::$GET[$path] = $function;
+    public function get(string $path) {
+        $segments = explode('/', $path);
+        $this->GET->route(array_slice($segments, 1));
     }
 
-    public function post(string $path, callable $function) {
-        self::$POST[$path] = $function;
+    public function post(string $path) {
+        $segments = explode('/', $path);
+        $this->POST->route(array_slice($segments, 1));
     }
-
-    public function delete(string $path, callable $function) {
-        self::$DELETE[$path] = $function;
-    }
-
-    public function patch(string $path, callable $function) {
-        self::$PATCH[$path] = $function;
-    }
-
 
 }
+
 
 class Route {
     /**
      * @var array<Route>
      */
-    private array $segments = array();
-    private $func;
+    public array $segments = array(); //todo
+    private mixed $func;
 
     /**
      * Route constructor.
@@ -65,14 +59,12 @@ class Route {
     public function route(array $path) {
         if (empty($path)) {
             return call_user_func($this->func);
+        } else if ($path[0] == '' and sizeof($path) == 1) {
+            return $this->route([]);
         }
         return $this->segments[$path[0]]->route(array_slice($path, 1));
     }
 
-    /**
-     * Route constructor.
-     * @param $func
-     */
     public function __construct($func = null) {
         if (is_null($func))
             $this->func = function () {};
@@ -80,7 +72,7 @@ class Route {
             $this->func = $func;
     }
 
-    public function bind(array $path, callable $func): static {
+    public function bind(array $path, callable | array $func): static {
         if (empty($path)) {
             $this->func = $func;
             return $this;
@@ -94,18 +86,3 @@ class Route {
     }
 
 }
-
-/**
- *
- * Router::get('human/details?id=2', HumanController::details)
- * Router::get('human/details?id=2')
- *
- * Router::bindGet('human/details?id=2', HumanController::details)
- *
- * Router::get('human/details?id=2')
- * Router::bind('human/details?id=2', HumanController::details, method = 'get')
- *
- *
- * Router::bind('human/details?id=2', HumanController::details)
- *
- */

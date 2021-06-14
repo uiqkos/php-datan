@@ -3,8 +3,9 @@
 /**
  * Class Model
  * @method toString()
+ * @method getValues()
  */
-abstract class Model extends stdClass {
+abstract class Model {
     public ?int $id = null;
 
     public function __call($method, $args) {
@@ -12,13 +13,14 @@ abstract class Model extends stdClass {
             $func = $this->$method;
             return call_user_func_array($func, $args);
         }
+        throw new Exception('Function not exists');
     }
 
     public function getId(): ?int {
         return $this->id;
     }
 
-    public function setId($id): MyModel {
+    public function setId($id): Model {
         $this->id = $id;
         return $this;
     }
