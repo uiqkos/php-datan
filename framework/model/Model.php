@@ -4,6 +4,7 @@
  * Class Model
  * @method toString()
  * @method getValues()
+ * @method getFieldNames()
  */
 abstract class Model {
     public ?int $id = null;

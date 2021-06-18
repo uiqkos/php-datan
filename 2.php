@@ -20,9 +20,17 @@ class MyModel extends Model {
 }
 
 class Lecturer extends Model {
+    /**
+     * @var string
+     * @toString
+     */
     public string $name;
     public int $age;
     public DateTime $birth_date;
+    /**
+     * @var int
+     * @toString
+     */
     public int $experience;
     public string $subject;
     public string $car_number;

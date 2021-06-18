@@ -13,6 +13,7 @@ class Repository {
      * Repository constructor.
      * @param DBConfig $config
      * @param $model
+     * @param null $table_name
      * @throws ReflectionException
      */
     public function __construct(DBConfig $config, $model, $table_name = null) {
@@ -146,6 +147,13 @@ class Repository {
 
     public function getFieldNames(): array {
         return $this->modelDecorator->getFieldNames();
+    }
+
+    public function getFieldNamesWithoutId(): array {
+        return array_filter(
+            $this->modelDecorator->getFieldNames(),
+            function ($s) { return $s != 'id'; }
+        );
     }
 
 }

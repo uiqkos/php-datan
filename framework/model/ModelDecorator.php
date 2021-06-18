@@ -75,7 +75,10 @@ class ModelDecorator {
                     return $s != 'id';
                 }
             )
-        )))->setId($fields['id']);
+        )));
+
+        if (isset($fields['id']))
+            $o->setId($fields['id']);
 
         $o->toString = function () use ($o) {
             return $this->asString($o);
@@ -83,6 +86,10 @@ class ModelDecorator {
 
         $o->getValues = function () use ($o) {
             return $this->toStringArray($o);
+        };
+
+        $o->getFieldNames = function () use ($o) {
+            return $this->getFieldNames();
         };
 
         return $o;
@@ -98,5 +105,12 @@ class ModelDecorator {
 
     public function asString(Model $object): string {
         return join(', ', $this->toStringArray($object));
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getModel() {
+        return $this->model;
     }
 }

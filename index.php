@@ -16,36 +16,21 @@ $config = new DBConfig(
     'mydb'
 );
 
-/**
- * @Controller
- */
+$lecturer_controller = new Controller(
+    new Repository(
+        $config, Lecturer::class
+    )
+);
 
-//$mycontroller = new MyModelController($config, MyModel::class);
-$lecturercont = new LecturerController($config, Lecturer::class);
-
-/**
- * @Routes
- */
-
-//Router::getInstance()->bind(
-//    '/mymodel/list', array($mycontroller, 'all'), 'get');
-Router::getInstance()->bind(
-    '/lecturer/peka/list', array($lecturercont, 'all'), 'get');
-
-Router::getInstance()->bind(
-    '/lecturer/peka/add', function () use ($lecturercont) {
-        $lecturercont->getRepository()->create(
-            new Lecturer(
-                'Vasya Puppkien',
-                14,
-                new DateTime('now'),
-                10,
-                'Chemistry',
-                'a300bc',
-                'Ulitsa pushkina dom kalatushkina 10'
-            ));
-}, 'get');
-
-Router::getInstance()->get($_SERVER['REQUEST_URI']);
-
-//Router::getInstance()->prefix()
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    if (isset($_POST['redirect'])) {
+        $redirect = $_POST['redirect'];
+        $_POST = array_diff_key($_POST, ['redirect' => 0]);
+        SuperRouter::getInstance()->post($_SERVER['REQUEST_URI'], array_merge($_GET, $_POST), $redirect);
+    } else {
+        SuperRouter::getInstance()->post($_SERVER['REQUEST_URI'], array_merge($_GET, $_POST));
+    }
+}
+if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+    SuperRouter::getInstance()->get($_SERVER['REQUEST_URI'], $_GET);
+}
