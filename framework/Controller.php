@@ -9,6 +9,7 @@ include "view/ListView.php";
 class Controller {
     private Repository $repository;
     private Router $router;
+    private string $model_name;
 
     /**
      * Controller constructor.
@@ -25,28 +26,37 @@ class Controller {
             );
         }
 
+        $this->model_name = $prefix;
         $this->router = new Router($this, $prefix);
     }
 
     public function all() {
+        head("List of $this->model_name".'s');
+        blockBegin();
         ListView(
-            $this->getRepository()->getFieldNames(),
+            $this->getRepository()->getModelDecorator()->getTranslatedFieldNames(),
             $this->getRepository()->findAll(),
             $this->router
         );
+        blockEnd();
     }
 
     public function details(int|string $id) {
         if (is_string($id))
             $id = intval($id);
+        head("Details about $this->model_name ($id)");
+        blockBegin();
         DetailsView(
             $this
                 ->getRepository()
                 ->findById($id)
         );
+        blockEnd();
     }
 
     public function create() {
+        head("Create $this->model_name");
+        blockBegin();
         CreateView(
             $this
                 ->getRepository()
@@ -55,13 +65,17 @@ class Controller {
                 ->getRepository()
                 ->getModelDecorator()
                 ->getTranslatedFieldNames(),
+            $this->router->getListRoute(),
             $this->router
         );
+        blockEnd();
     }
 
     public function update(int|string $id) {
         if (is_string($id))
             $id = intval($id);
+        head("Edit $this->model_name ($id)");
+        blockBegin();
         UpdateView(
             $this
                 ->getRepository()
@@ -72,20 +86,40 @@ class Controller {
                 ->getValues(),
             $this->router
         );
+        blockEnd();
     }
 
     public function delete(int|string $id) {
         if (is_string($id))
             $id = intval($id);
+
+        head("Delete $this->model_name ($id)");
+        blockBegin();
         DeleteView(
             $this
                 ->getRepository()
                 ->findById($id),
+            $this->router->getListRoute(),
             $this->router
         );
+        blockEnd();
     }
 
     public function getRepository(): Repository {
         return $this->repository;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getModelName(): ?string {
+        return $this->model_name;
+    }
+
+    /**
+     * @return Router
+     */
+    public function getRouter(): Router {
+        return $this->router;
     }
 }

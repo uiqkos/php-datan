@@ -1,6 +1,4 @@
-<?php function DeleteView(Model $obj, Router $router): bool {
-    head("Delete $obj");
-    blockBegin();
+<?php function DeleteView(Model $obj, string $redirect_url, Router $router): bool {
     $id = $obj->getId();
 echo "<h1>Вы уверены, что хотите удалить $obj ?</h1>"; ?>
 
@@ -8,10 +6,10 @@ echo "<h1>Вы уверены, что хотите удалить $obj ?</h1>"; 
         <button
             type="submit"
             name="redirect"
-            value="<?php echo $router->getListRoute()?>"
+            value="<?php echo $redirect_url?>"
             class="btn btn-outline-danger">Удалить</button>
     </form>
     <a href="<?php echo $router->getListRoute()?>" class="btn btn-outline-secondary">Отмена</a>
 
 
-    <?php blockEnd(); return true; } ?>
+    <?php  return true; } ?>

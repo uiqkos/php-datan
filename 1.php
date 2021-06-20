@@ -46,7 +46,7 @@
 
 
 /**
- * @Route(figma motors)
+ * @Route(привет)
  */
 function f () {
 
@@ -54,5 +54,6 @@ function f () {
 
 $r = new ReflectionFunction('f');
 print $r->getDocComment();
-preg_match('(@(?<key>\w+)\((?<value>[a-zA-Z0-9_ ]+)\))', $r->getDocComment(), $matches);
+//preg_match('/[\p{L}]+/u', 'привевт', $matches);
+preg_match("(@(?<key>\w+)\((?<value>/([\p{L}a-zA-Z0-9_ ]+/u))\))",$r->getDocComment(), $matches);
 var_dump($matches);

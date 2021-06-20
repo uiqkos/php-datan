@@ -8,12 +8,12 @@ class Lecturer extends Model {
     /**
      * @var string
      * @toString
-     * @translated ФИО
+     * @translated(Fullname)
      */
     public string $name;
     /**
      * @var int
-     * @translated Возраст
+     * @translated(Age)
      */
     public int $age;
     public DateTime $birth_date;
@@ -51,19 +51,19 @@ class Lecturer extends Model {
 class Car extends Model {
     /**
      * @var string
-     * @applyToString true
-     * @translated Бренд
+     * @applyToString()
+     * @translated(Бренд)
      */
     public string $brand;
     /**
      * @var DateTime
-     * @translated Дата_покупки
+     * @translated(Дата покупки)
      */
     public DateTime $buy_date;
     /**
      * @var int
-     * @ref Lecturer
-     * @onDelete CASCADE
+     * @ref(Lecturer)
+     * @onDelete(CASCADE)
      */
     public int $lecturer_id;
 

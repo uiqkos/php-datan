@@ -35,7 +35,7 @@ class Repository {
 
         $fields = array_map(
             function ($name, $value) {
-                return "$name $value";
+                return "`$name` $value";
             },
             $this->modelDecorator->getFieldNames(),
             $this->modelDecorator->getFieldsAsString()
@@ -44,6 +44,7 @@ class Repository {
         $fields = join(', ', $fields);
 
         if (!empty($this->getModelDecorator()->getForeignKeys())) {
+
             $foreign_keys = array_map(
                 function ($key, $foreign_keys) {
                     $onDelete = $foreign_keys['onDelete'];
@@ -54,12 +55,12 @@ class Repository {
                 $this->modelDecorator->getForeignKeys()
             );
             $this->connection->query(
-                "create table if not exists $this->table_name ($fields, ".
+                "create table if not exists `$this->table_name` ($fields, ".
                 join(', ', $foreign_keys).')'
             );
         } else {
             $this->connection->query(
-                "create table if not exists $this->table_name ($fields)"
+                "create table if not exists `$this->table_name` ($fields)"
             );
         }
 
@@ -68,7 +69,7 @@ class Repository {
 
     public function delete(int $id): int {
         $r = $this->connection->query(
-            "delete from $this->table_name ".
+            "delete from `$this->table_name` ".
                 "where id=$id"
         );
         if ($r)
@@ -78,7 +79,7 @@ class Repository {
 
     public function findById(int $id): Model {
         $result = $this->connection->query(
-            "select * from $this->table_name where id=$id"
+            "select * from `$this->table_name` where id=$id"
         );
         if ($r = $result->fetch_assoc()){
             return $this->modelDecorator->fromArray($r);
@@ -88,7 +89,7 @@ class Repository {
 
     public function findAll(): array {
         $result = $this->connection->query(
-            "select * from $this->table_name"
+            "select * from `$this->table_name`"
         );
         $objects = array();
         while ($r = $result->fetch_assoc()) {
@@ -103,8 +104,9 @@ class Repository {
     public function create(Model $object): Model {
         $fields = join(', ', $this->modelDecorator->getFieldNames());
         $values = join(', ', $this->modelDecorator->parseValuesToMySql($object));
+        print "insert into `$this->table_name` values ($values)";
         $this->connection->query(
-            "insert into $this->table_name ($fields) values ($values)"
+            "insert into `$this->table_name` values ($values)"
         );
         return $object->setId($this->connection->insert_id);
     }
@@ -112,14 +114,14 @@ class Repository {
     public function update(Model $object) {
         $setters = join(', ', array_map(
             function ($name, $value) {
-                return "$name=$value";
+                return "`$name`=$value";
             },
             $this->modelDecorator->getFieldNames(),
             $this->modelDecorator->parseValuesToMySql($object)
         ));
         $id = $object->getId();
         $this->connection->query(
-            "update $this->table_name set $setters where id = $id"
+            "update `$this->table_name` set $setters where id = $id"
         );
     }
 
@@ -169,7 +171,9 @@ class Repository {
     public function getFieldNamesWithoutId(): array {
         return array_filter(
             $this->modelDecorator->getFieldNames(),
-            function ($s) { return $s != 'id'; }
+            function ($s) {
+                return $s != 'id';
+            }
         );
     }
 

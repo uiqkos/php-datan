@@ -6,8 +6,6 @@
 
 function DetailsView(Model $object) {
     $name = $object::class;
-    head("Details about $name");
-    blockBegin();
 ?>
     <h1><?php echo $object; ?></h1>
     <table class="table table-hover">
@@ -26,6 +24,5 @@ function DetailsView(Model $object) {
     </table>
 
 <?php
-blockEnd();
 }
 ?>

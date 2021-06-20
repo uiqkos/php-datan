@@ -7,8 +7,7 @@ require 'framework/html/base.php';
  * @param array<Model> $objects
  */
 function ListView(array $col_names, array $objects, Router $router) {
-    head('List');
-    blockBegin();
+
 ?>
     <table class="table">
         <thead>
@@ -37,4 +36,4 @@ function ListView(array $col_names, array $objects, Router $router) {
         <?php } ?>
         </tbody>
     </table>
-<?php } blockEnd(); ?>
+<?php } ?>

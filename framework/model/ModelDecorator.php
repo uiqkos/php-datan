@@ -1,5 +1,6 @@
 <?php
 
+require 'framework/model/Types.php';
 
 class ModelDecorator {
     private $model;
@@ -20,6 +21,7 @@ class ModelDecorator {
         $this->fields = array();
         foreach ($this->r->getProperties() as $property) {
             $annotations = self::parseAnnotations($property->getDocComment());
+
             $this->fields[$property->getName()] =
                 match ($type = strval($property->getType())) {
                     '?int' => new Id(),
@@ -28,15 +30,19 @@ class ModelDecorator {
                     'DateTime' => new DateField(),
                     default => throw new Exception("Cannot convert field: $type")
                 };
+
             if (isset($annotations['ref'])) {
-                $this->foreign_keys[$property->getName()] = $annotations['ref'];
+                $this->foreign_keys[$property->getName()] = [
+                    'key' => $annotations['ref'],
+                    'onDelete' => $annotations['onDelete']
+                ];
             }
-            if (isset($annotations['toString'])) {
+            if (isset($annotations['applyToString'])) {
                 array_push($this->to_string_field_names, $property->getName());
             }
             if (isset($annotations['translated'])) {
                 $this->translated_field_names[$property->getName()] = $annotations['translated'];
-            } else {
+            } else if($property->getName() != 'id') {
                 $this->translated_field_names[$property->getName()] = $property->getName();
             }
         }
@@ -45,20 +51,21 @@ class ModelDecorator {
     public static function parseAnnotations(string $docComment): array {
         $annotations = [
             'maxLength' => 200,
-            'onDelete' => 'cascade'
         ];
-        $docs = explode(' ', $docComment);
-        for ($i = 0; $i < sizeof($docs); $i++)  {
-            if (str_starts_with($docs[$i], '@')) {
-                match (substr($docs[$i], 1)) {
-                    'ref' => $annotations['ref'] = ['key' => $docs[$i + 1]],
-                    'applyToString' => $annotations['toString'] = true,
-                    'onDelete' => $annotations['ref']['onDelete'] = $docs[$i + 1],
-                    'translated' => $annotations['translated'] = $docs[$i + 1],
-                    default => ''
-                };
+        preg_match_all(
+            '(@(?<key>\w+)(\((?<value>[\p{L}a-zA-Z0-9_ ]+)\)|\(\)))u',
+            $docComment,
+            $matches
+        );
+
+        if (isset($matches['value']))
+            foreach (array_map(
+                null,
+                $matches['key'],
+                $matches['value']
+             ) as list($key, $value)) {
+                $annotations[$key] = $value;
             }
-        }
         return $annotations;
     }
 
@@ -161,7 +168,7 @@ class ModelDecorator {
         return $this->foreign_keys;
     }
 
-    public function getTranslatedFieldNames() {
+    public function getTranslatedFieldNames(): array {
         return $this->translated_field_names;
     }
 }

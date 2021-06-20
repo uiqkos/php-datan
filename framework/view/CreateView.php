@@ -1,7 +1,4 @@
-<?php function CreateView(array $col_names, array $translated_col_names, Router $router) {
-    head('Hello');
-    blockBegin();
-?>
+<?php function CreateView(array $col_names, array $translated_col_names, string $redirect_url, Router $router) {?>
     <form action="<?php echo '..'.$router->getCreateRoute()?>" method="post">
         <?php foreach (array_map(
                 null,
@@ -22,9 +19,7 @@
             type="submit"
             class="btn btn-primary"
             name="redirect"
-            value="<?php echo $router->getListRoute() ?>"
+            value="<?php echo $redirect_url ?>"
         >Submit</button>
     </form>
-<?php
-blockEnd();
-} ?>
+<?php } ?>

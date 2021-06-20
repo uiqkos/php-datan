@@ -1,6 +1,5 @@
 <?php function UpdateView(array $col_names, array $values, Router $router) {
-    head('Hello');
-    blockBegin();
+
 ?>
     <form action="<?php echo '..'.$router->getUpdateRoute()?>" method="post">
         <?php foreach (array_map(null, $col_names, $values) as list($col_name, $value)) { ?>
@@ -23,5 +22,4 @@
         >Submit</button>
     </form>
     <?php
-    blockEnd();
 } ?>
