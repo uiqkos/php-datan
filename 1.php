@@ -46,7 +46,7 @@
 
 
 /**
- * @Route('/f')
+ * @Route(figma motors)
  */
 function f () {
 
@@ -54,4 +54,5 @@ function f () {
 
 $r = new ReflectionFunction('f');
 print $r->getDocComment();
-
+preg_match('(@(?<key>\w+)\((?<value>[a-zA-Z0-9_ ]+)\))', $r->getDocComment(), $matches);
+var_dump($matches);

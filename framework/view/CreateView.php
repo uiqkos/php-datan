@@ -1,17 +1,20 @@
-<?php function CreateView(array $col_names, Router $router) {
+<?php function CreateView(array $col_names, array $translated_col_names, Router $router) {
     head('Hello');
     blockBegin();
 ?>
     <form action="<?php echo '..'.$router->getCreateRoute()?>" method="post">
-        <?php foreach ($col_names as $col_name) { ?>
+        <?php foreach (array_map(
+                null,
+                $col_names,
+                $translated_col_names
+           ) as list($col_name, $translated)) { ?>
         <div class="form-group">
-            <label for="field"><?php echo $col_name ?></label>
+            <label for="field"><?php echo $translated ?></label>
             <input
                 type="text"
                 class="form-control"
                 name="<?php echo $col_name ?>"
                 id="field"
-                placeholder="Enter <?php echo $col_name ?>"
             >
         </div>
         <?php } ?>

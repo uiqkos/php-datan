@@ -9,14 +9,14 @@ function DetailsView(Model $object) {
     head("Details about $name");
     blockBegin();
 ?>
-    <h1>???</h1>
+    <h1><?php echo $object; ?></h1>
     <table class="table table-hover">
         <tbody>
 
             <?php
             foreach (array_map(null,
                 $object->getValues(),
-                $object->getFieldNames()
+                $object->getTranslatedFieldNames()
              ) as list($value, $field_name))
                 echo "<tr><th scope='row'>$field_name</th><td>$value</td></th></tr>";
             ?>

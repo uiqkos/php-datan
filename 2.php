@@ -4,27 +4,17 @@ include "framework/model/Types.php";
 include "framework/model/Model.php";
 include "framework/Controller.php";
 
-/**
- * @Models
- */
-class MyModel extends Model {
-    public string $name;
-    public int $age;
-    public DateTime $birth_date;
-
-    public function __construct(string $name, int $age, DateTime $birth_date) {
-        $this->name = $name;
-        $this->age = $age;
-        $this->birth_date = $birth_date;
-    }
-}
-
 class Lecturer extends Model {
     /**
      * @var string
      * @toString
+     * @translated ФИО
      */
     public string $name;
+    /**
+     * @var int
+     * @translated Возраст
+     */
     public int $age;
     public DateTime $birth_date;
     /**
@@ -58,29 +48,35 @@ class Lecturer extends Model {
 
 }
 
-class LecturerController extends Controller {
-    private Repository $lecturerRepository;
-
-    public function __construct(DBConfig $config, $model) {
-        $this->lecturerRepository = new Repository($config, $model);
-    }
-
-    public function getRepository(): Repository {
-        return $this->lecturerRepository;
-    }
-}
-
-class MyModelController extends Controller {
-    private Repository $myModelRepository;
+class Car extends Model {
+    /**
+     * @var string
+     * @applyToString true
+     * @translated Бренд
+     */
+    public string $brand;
+    /**
+     * @var DateTime
+     * @translated Дата_покупки
+     */
+    public DateTime $buy_date;
+    /**
+     * @var int
+     * @ref Lecturer
+     * @onDelete CASCADE
+     */
+    public int $lecturer_id;
 
     /**
-     * @throws ReflectionException
+     * Car constructor.
+     * @param string $brand
+     * @param DateTime $buy_date
+     * @param int $lecturer_id
      */
-    public function __construct(DBConfig $config, $model) {
-        $this->myModelRepository = new Repository($config, $model);
+    public function __construct(string $brand, DateTime $buy_date, int $lecturer_id) {
+        $this->brand = $brand;
+        $this->buy_date = $buy_date;
+        $this->lecturer_id = $lecturer_id;
     }
 
-    public function getRepository(): Repository {
-        return $this->myModelRepository;
-    }
 }

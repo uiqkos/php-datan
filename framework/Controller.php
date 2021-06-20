@@ -51,6 +51,10 @@ class Controller {
             $this
                 ->getRepository()
                 ->getFieldNamesWithoutId(),
+            $this
+                ->getRepository()
+                ->getModelDecorator()
+                ->getTranslatedFieldNames(),
             $this->router
         );
     }

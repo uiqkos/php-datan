@@ -43,9 +43,27 @@ class Repository {
 
         $fields = join(', ', $fields);
 
-        $this->connection->query(
-            "create table if not exists $this->table_name ($fields)"
-        );
+        if (!empty($this->getModelDecorator()->getForeignKeys())) {
+            $foreign_keys = array_map(
+                function ($key, $foreign_keys) {
+                    $onDelete = $foreign_keys['onDelete'];
+                    $foreign_key_name = $foreign_keys['key'];
+                    return "foreign key ($key) references $foreign_key_name (id) on delete $onDelete";
+                },
+                array_keys($this->modelDecorator->getForeignKeys()),
+                $this->modelDecorator->getForeignKeys()
+            );
+            $this->connection->query(
+                "create table if not exists $this->table_name ($fields, ".
+                join(', ', $foreign_keys).')'
+            );
+        } else {
+            $this->connection->query(
+                "create table if not exists $this->table_name ($fields)"
+            );
+        }
+
+
     }
 
     public function delete(int $id): int {
@@ -85,7 +103,6 @@ class Repository {
     public function create(Model $object): Model {
         $fields = join(', ', $this->modelDecorator->getFieldNames());
         $values = join(', ', $this->modelDecorator->parseValuesToMySql($object));
-        print "insert into $this->table_name ($fields) values ($values)";
         $this->connection->query(
             "insert into $this->table_name ($fields) values ($values)"
         );

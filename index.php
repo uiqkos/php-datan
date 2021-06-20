@@ -22,6 +22,12 @@ $lecturer_controller = new Controller(
     )
 );
 
+$car_controller = new Controller(
+    new Repository(
+        $config, Car::class
+    )
+);
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['redirect'])) {
         $redirect = $_POST['redirect'];

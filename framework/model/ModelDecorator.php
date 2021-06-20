@@ -4,6 +4,9 @@
 class ModelDecorator {
     private $model;
     private array $fields;
+    private array $translated_field_names = array();
+    private array $to_string_field_names = array();
+    private array $foreign_keys = array();
     private ReflectionClass $r;
 
     /**
@@ -16,15 +19,47 @@ class ModelDecorator {
 
         $this->fields = array();
         foreach ($this->r->getProperties() as $property) {
+            $annotations = self::parseAnnotations($property->getDocComment());
             $this->fields[$property->getName()] =
-                match ($strtype = strval($property->getType())) {
+                match ($type = strval($property->getType())) {
                     '?int' => new Id(),
                     'int' => new IntegerField(),
-                    'string' => new StringField(200),
+                    'string' => new StringField($annotations['maxLength']),
                     'DateTime' => new DateField(),
-                    default => throw new Exception("Cannot convert field: $strtype")
+                    default => throw new Exception("Cannot convert field: $type")
                 };
+            if (isset($annotations['ref'])) {
+                $this->foreign_keys[$property->getName()] = $annotations['ref'];
+            }
+            if (isset($annotations['toString'])) {
+                array_push($this->to_string_field_names, $property->getName());
+            }
+            if (isset($annotations['translated'])) {
+                $this->translated_field_names[$property->getName()] = $annotations['translated'];
+            } else {
+                $this->translated_field_names[$property->getName()] = $property->getName();
+            }
         }
+    }
+
+    public static function parseAnnotations(string $docComment): array {
+        $annotations = [
+            'maxLength' => 200,
+            'onDelete' => 'cascade'
+        ];
+        $docs = explode(' ', $docComment);
+        for ($i = 0; $i < sizeof($docs); $i++)  {
+            if (str_starts_with($docs[$i], '@')) {
+                match (substr($docs[$i], 1)) {
+                    'ref' => $annotations['ref'] = ['key' => $docs[$i + 1]],
+                    'applyToString' => $annotations['toString'] = true,
+                    'onDelete' => $annotations['ref']['onDelete'] = $docs[$i + 1],
+                    'translated' => $annotations['translated'] = $docs[$i + 1],
+                    default => ''
+                };
+            }
+        }
+        return $annotations;
     }
 
     public function getFields(): array {
@@ -36,15 +71,16 @@ class ModelDecorator {
     }
 
 
-    public function toStringArray(Model $object): array {
+    public function toStringArray(Model $object, $field_names = null): array {
+        if (is_null($field_names))
+            $field_names = $this->getFieldNames();
         return array_map(
-            function (Field $field, $field_name) use ($object) {
-                if ($field instanceof Id)
-                    return $field->toString($object->getId());
-                return $field->toString($object->$field_name);
+            function ($field_name) use ($object) {
+                if ($this->fields[$field_name] instanceof Id)
+                    return $this->fields[$field_name]->toString($object->getId());
+                return $this->fields[$field_name]->toString($object->$field_name);
             },
-            $this->getFields(),
-            $this->getFieldNames()
+            $field_names
         );
     }
 
@@ -88,8 +124,12 @@ class ModelDecorator {
             return $this->toStringArray($o);
         };
 
-        $o->getFieldNames = function () use ($o) {
+        $o->getFieldNames = function () {
             return $this->getFieldNames();
+        };
+
+        $o->getTranslatedFieldNames = function () {
+            return $this->getTranslatedFieldNames();
         };
 
         return $o;
@@ -104,7 +144,7 @@ class ModelDecorator {
     }
 
     public function asString(Model $object): string {
-        return join(', ', $this->toStringArray($object));
+        return join(', ', $this->toStringArray($object, $this->to_string_field_names));
     }
 
     /**
@@ -112,5 +152,16 @@ class ModelDecorator {
      */
     public function getModel() {
         return $this->model;
+    }
+
+    /**
+     * @return array
+     */
+    public function getForeignKeys(): array {
+        return $this->foreign_keys;
+    }
+
+    public function getTranslatedFieldNames() {
+        return $this->translated_field_names;
     }
 }

@@ -5,6 +5,7 @@
  * @method toString()
  * @method getValues()
  * @method getFieldNames()
+ * @method getTranslatedFieldNames()
  */
 abstract class Model {
     public ?int $id = null;
