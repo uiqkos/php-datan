@@ -27,18 +27,26 @@ class User extends Model {
     public DateTime $register_date;
 
     /**
+     * @var string
+     */
+    public string $password;
+
+    /**
      * User constructor.
      * @param string $full_name
      * @param DateTime $birth_date
      * @param string $company
      * @param DateTime $register_date
+     * @param string $password
      */
-    public function __construct(string $full_name, DateTime $birth_date, string $company, DateTime $register_date) {
+    public function __construct(string $full_name, DateTime $birth_date, string $company, DateTime $register_date, string $password) {
         $this->full_name = $full_name;
         $this->birth_date = $birth_date;
         $this->company = $company;
         $this->register_date = $register_date;
+        $this->password = $password;
     }
+
 
 }
 

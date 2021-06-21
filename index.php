@@ -8,6 +8,8 @@ include "framework/view/home.php";
 
 require "datan/models.php";
 require "datan/DatasetController.php";
+require "datan/UserController.php";
+require "datan/LikeRepository.php";
 
 /**
  * @Config
@@ -25,7 +27,7 @@ $config = new DBConfig(
  */
 
 
-$user_controller = new Controller(
+$user_controller = new UserController(
     new Repository(
         $config, User::class
     )
@@ -43,7 +45,7 @@ $comment_controller = new Controller(
 );
 
 $like_controller = new Controller(
-    new Repository(
+    new LikeRepository(
         $config, Like::class
     )
 );

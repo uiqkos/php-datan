@@ -9,44 +9,25 @@
 function DatasetDetailsView(Dataset $dataset, int $likes_count, Controller $comment_controller, Controller $like_controller) {
 
     DetailsView($dataset);
+    $user_id = UserController::getCurrentUserId();
+    $dataset_id = $dataset->getId();
+    $current_date = (new DateTime('now'))->format('Y-m-d');
     ?>
-    <form action="<?php echo '..'.$like_controller->getRouter()->getCreateRoute() ?>" method="post">
+    <?php
+    if ($like = $like_controller->getRepository()->isLikes($user_id)) {
+        $like_id = $like->getId();
+    ?>
+        <form action="<?php echo '..'.$like_controller->getRouter()->getDeleteRoute()."?id=$like_id"?>" method="post">
+    <?php } else ?>
+    <form action="<?php echo '..'.$like_controller->getRouter()->getCreateRoute()."?user_id=$user_id&dataset_id=$dataset_id&date=$current_date"?>" method="post">
 
-    <div class="form-group">
-        <label for="field">Id пользователя</label>
-        <input
-            type="text"
-            class="form-control"
-            name="user_id"
-            id="field"
-        >
-    </div>
-    <div class="form-group">
-        <label for="field">Id датасета</label>
-        <input
-            readonly="readonly"
-            type="text"
-            class="form-control"
-            name="dataset_id"
-            id="field"
-            value="<?php echo $dataset->getId()?>"
-        >
-    </div>
-    <div class="form-group">
-        <label for="field">Дата публикации</label>
-        <input
-            readonly="readonly"
-            type="text"
-            class="form-control"
-            name="date"
-            id="field"
-            value="<?php echo (new DateTime('now'))->format('Y-m-d'); ?>"
-        >
-    </div>
-    <div class="form-group">
+
+
+<div class="form-group">
         <button type="submit"
             class="btn btn-primary"
             name="redirect"
+
             value="<?php echo $_SERVER['REQUEST_URI'] ?>"
         >
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-star" viewBox="0 0 16 16">

@@ -33,7 +33,7 @@
                 <a class="nav-link" href="#"><span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/accounts/login">Sign in</a>
+                <a class="nav-link" href="/login">Sign in</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="#">Sign out</a>
