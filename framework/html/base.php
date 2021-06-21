@@ -21,13 +21,10 @@
     <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
         <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
             <li class="nav-item active">
-                <a class="nav-link" href="/home">Home<span class="sr-only">(current)</span></a>
+                <a class="nav-link" href="/">Home<span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item active">
-                <a class="nav-link" href="/accounts/profile">Profile<span class="sr-only">(current)</span></a>
-            </li>
-            <li class="nav-item active">
-                <a class="nav-link" href="doc/swagger">Help<span class="sr-only">(current)</span></a>
+                <a class="nav-link" href="/user/details?id=<?php echo UserController::getCurrentUserId()?>">Profile<span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item active">
                 <a class="nav-link" href="#"><span class="sr-only">(current)</span></a>
@@ -36,7 +33,7 @@
                 <a class="nav-link" href="/login">Sign in</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">Sign out</a>
+                <a class="nav-link" href="/user/create">Sign up</a>
             </li>
             <li>
             </li>

@@ -5,6 +5,7 @@
  * @param int $likes_count
  * @param Controller $comment_controller
  * @param Controller $like_controller
+ * @throws Exception
  */
 function DatasetDetailsView(Dataset $dataset, int $likes_count, Controller $comment_controller, Controller $like_controller) {
 
@@ -23,7 +24,7 @@ function DatasetDetailsView(Dataset $dataset, int $likes_count, Controller $comm
 
 
 
-<div class="form-group">
+        <div class="form-group">
         <button type="submit"
             class="btn btn-primary"
             name="redirect"
@@ -37,13 +38,13 @@ function DatasetDetailsView(Dataset $dataset, int $likes_count, Controller $comm
     </div>
     </form>
     <?php ListView(
-        $comment_controller->getRepository()->getFieldNames(),
+        $comment_controller->getRepository()->getModelDecorator()->getTranslatedFieldNames(),
         $comment_controller->getRepository()->findAll(),
         $comment_controller->getRouter()
     ); ?>
 
 
-    <form action="<?php echo '..'.$comment_controller->getRouter()->getCreateRoute() ?>" method="post">
+    <form action="<?php echo '..'.$comment_controller->getRouter()->getCreateRoute()."?dataset_id=$dataset_id&user_id=$user_id&date=$current_date" ?>" method="post">
         <div class="form-group">
         <label for="field">Тема</label>
         <input
@@ -63,36 +64,6 @@ function DatasetDetailsView(Dataset $dataset, int $likes_count, Controller $comm
         >
         </div>
         <div class="form-group">
-        <label for="field">Id пользователя</label>
-        <input
-            type="text"
-            class="form-control"
-            name="user_id"
-            id="field"
-        >
-        </div>
-        <div class="form-group">
-        <label for="field">Id датасета</label>
-        <input
-            readonly="readonly"
-            type="text"
-            class="form-control"
-            name="dataset_id"
-            id="field"
-            value="<?php echo $dataset->getId()?>"
-        >
-        </div>
-        <div class="form-group">
-        <label for="field">Дата публикации</label>
-        <input
-            readonly="readonly"
-            type="text"
-            class="form-control"
-            name="date"
-            id="field"
-            value="<?php echo (new DateTime('now'))->format('Y-m-d'); ?>"
-        >
-        </div>
         <div class="form-group">
 
             <button type="submit"
